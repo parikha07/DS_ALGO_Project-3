@@ -1,0 +1,91 @@
+#define M 3
+class Hill_Cipher
+{
+    public :
+
+
+void inverseMatrix(int key[][3], int inv[][3])
+{
+    int C[3][3];
+    int A[3][3];
+
+    C[0][0] = key[1][1] * key[2][2] - key[2][1] * key[1][2];
+    C[0][1] = -(key[1][0] * key[2][2] - key[2][0] * key[1][2]);
+    C[0][2] = key[1][0] * key[2][1] - key[1][1] * key[2][0];
+    C[1][0] = -(key[0][1] * key[2][2] - key[2][1] * key[0][2]);
+    C[1][1] = key[0][0] * key[2][2] - key[2][0] * key[0][2];
+    C[1][2] = -(key[0][0] * key[2][1] - key[2][0] * key[0][1]);
+    C[2][0] = key[0][1] * key[1][2] - key[0][2] * key[1][1];
+    C[2][1] = -(key[0][0] * key[1][2] - key[1][0] * key[0][2]);
+    C[2][2] = key[0][0] * key[1][1] - key[1][0] * key[0][1];
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            A[i][j] = C[j][i];
+        }
+    }
+
+    int det = key[0][0] * C[0][0] + key[0][1] * C[0][1] + key[0][2] * C[0][2];
+
+    if (det == 0 || det % 2 == 0 || det % 13 == 0) {
+        printf("The text cannot be encrypted. Take valid key.\n");
+        exit(1);
+    }
+
+   int invs = det;
+   //cout<<invs<<endl;
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            inv[i][j] = A[i][j] * invs;
+            //cout<<inv[i][j]<<" ";
+        }
+    }
+
+}
+
+string encrypt(string text, int key[][3])
+{
+    string c = "";
+    int k = 0;
+    int input[3];
+
+    while (k < text.length()) {
+        input[0] = text[k++] - 65;
+        input[1] = text[k++] - 65;
+        input[2] = text[k++] - 65;
+
+        for (int i = 0; i < M; i++) {
+            int cipher = 0;
+            for (int j = 0; j < M; j++) {
+                cipher += key[i][j] * input[j];
+            }
+            c += (cipher % 26) + 65;
+        }
+    }
+
+    return c;
+}
+
+string decrypt(string s, int inv[][3])
+{
+    string d = "";
+    int k = 0;
+    int input[3];
+
+    while (k < s.length()) {
+        input[0] = s[k++] - 65;
+        input[1] = s[k++] - 65;
+        input[2] = s[k++] - 65;
+
+        for (int i = 0; i < M; i++) {
+            int decipher = 0;
+            for (int j = 0; j < M; j++) {
+                decipher += inv[i][j] * input[j];
+            }
+            d += (decipher % 26) + 65;
+        }
+    }
+    return d;
+}
+};
